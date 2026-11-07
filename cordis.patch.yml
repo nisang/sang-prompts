@@ -1,0 +1,10 @@
+# 桑的提示词：安装到 profile 后挂载。
+# 系统提示词由插件在装配阶段替换；项目规程由插件在会话进入项目目录时写入。
+- insert:
+    - id: sang-prompts
+      name: dsh-sang-prompts
+      config:
+        systemPrompt: true
+        userPrompt: true
+        detectProject: true
+        fileName: AGENTS.md
