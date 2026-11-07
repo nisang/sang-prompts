@@ -95,7 +95,51 @@
 | subagent | Delegate a self-contained task to a subagent (a separate agent that works in its own context) to offload focused, independent work — research, a scoped implementation, an analysis — so it does not consume this conversation's context. The subagent returns its result, not its intermediate steps. | 将自包含的任务委派给子代理（一个在自身上下文中工作的独立代理），以分担聚焦的独立工作——研究、限定的实现、分析——从而不消耗本会话的上下文。子代理返回其结果，而不是中间步骤。 |
 | subagent_fork | Delegate a task to a subagent that inherits this conversation: a child agent seeded with all completed turns so far (it does not see the current in-flight turn). Use this when the subtask builds on this conversation's context — a follow-up analysis, a review, a continuation. | 将任务委派给继承本对话的子代理：一个以当前全部已完成轮次作为初始上下文的子代理（它看不到当前进行中的轮次）。当子任务基于本会话上下文时使用——后续分析、评审、续写。 |
 
+## 九、沙箱文件策略（sandbox policy）
+
+来源：`@deepseek-ai/dsh-sandbox-policy`（context：`sandbox:policy`）
+
+| 英文原文 | 中文翻译 |
+|---|---|
+| Current DSH file policy: read-only. Any available operation enforced by the DSH file sandbox cannot modify files in the standing mode. Do not refuse a required modification from this policy alone: try an available tool normally and follow any denial and escalation guidance it returns. | 当前 DSH 文件策略：只读。DSH 文件沙箱强制执行的可用操作无法修改现有模式下的文件。不要仅凭此策略拒绝必要的修改：请正常尝试可用的工具，并遵循其返回的任何拒绝与升级指引。 |
+| Current DSH file policy: workspace-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: `{root}`. Some platform temporary areas may also be writable. | 当前 DSH 文件策略：工作区可写。DSH 文件沙箱强制执行的可用操作可以修改会话工作区下的文件：`{root}`。部分平台临时区域也可能可写。 |
+| Current DSH file policy: danger-full-access. The DSH file sandbox does not restrict file modifications by available operations. | 当前 DSH 文件策略：完全访问。DSH 文件沙箱不限制可用操作对文件的修改。 |
+
+## 十、审批政策（approval policy）
+
+来源：`@deepseek-ai/dsh-user-approval`（context：`approval:policy`）
+
+| 英文原文 | 中文翻译 |
+|---|---|
+| Approval prompts are disabled in this session: actions that require approval are rejected automatically — do not request sandbox escalation (do not set `sandbox_permissions`). | 本会话已禁用审批提示：需要审批的操作会被自动拒绝——不要请求沙箱升级（不要设置 `sandbox_permissions`）。 |
+| Approval prompts are enabled in this session: operations that require approval may ask through the configured answerers; without an available answerer, the request fails closed. | 本会话已启用审批提示：需要审批的操作可以通过配置的应答者询问；没有可用应答者时，请求会以失败关闭。 |
+
+## 十一、工具指导（tool guidance sections）
+
+来源：`@deepseek-ai/dsh-tool-bash`、`@deepseek-ai/dsh-tool-fs` 注册的系统提示词段
+
+| 工具 | 英文原文 | 中文翻译 |
+|---|---|---|
+| bash | Check the [exit code: N] marker on every bash result; investigate failures before moving on. | 检查每个 bash 结果上的 [exit code: N] 标记；在继续前调查失败。 |
+| read | Use the read tool — not shell commands like cat — to inspect text files. Use offset and limit to continue reading large files. | 使用 read 工具（而不是 cat 等 shell 命令）检查文本文件。使用 offset 和 limit 继续读取大文件。 |
+| write/edit | Read an existing file before overwriting it with write and prefer edit for targeted changes. | 在用 write 覆盖现有文件之前先读取它；针对性修改时优先使用 edit。 |
+| edit | Read a file before editing it unless you just created or edited it in this session. | 编辑文件前先读取它，除非你刚在本会话中创建或编辑过它。 |
+| apply_patch | Prefer apply_patch over separate edit calls for changes across files or separated regions. Give every hunk enough surrounding context lines to match one place in the current file. The whole patch is checked first (syntax, hunk matching, missing files) and a rejected patch changes nothing; once applying starts, operations run in order, stop at the first failure, and are not rolled back, so re-read affected files before retrying when needed. | 跨文件或分隔区域的修改，优先使用 apply_patch 而不是多次 edit。给每个 hunk 足够的上下文行，使其在当前文件中只匹配一处。整个补丁会先被检查（语法、hunk 匹配、缺失文件），被拒绝的补丁不会改变任何内容；一旦开始应用，操作按顺序执行，遇到第一个失败即停止，且不会回滚，因此重试前需要重新读取受影响文件。 |
+
+## 十二、结构化输出指令（structured output）
+
+来源：`@deepseek-ai/dsh-subagent`（子代理的 `structured_output` 工具指导段）
+
+| 英文原文 | 中文翻译 |
+|---|---|
+| When you have your final answer, you MUST report it by calling the `structured_output` tool with arguments matching its parameter schema exactly. Do not finish with a plain text answer: only the tool call counts as your result. | 当你得出最终答案时，必须通过调用 `structured_output` 工具来报告，参数必须与其参数模式完全匹配。不要以纯文本答案结束：只有工具调用才算你的结果。 |
+
 ## 处理范围说明
 
-- **插件已覆盖**：一（subagent 注入指令）、三（harness 身份）、四（workspace 提醒）、五（runtime context）、六（时间上下文）、七（plan-mode）——通过 `agent/pre-step` 修改用户消息文本与 `system-prompt/assemble` 修改系统提示词段实现。
-- **暂未覆盖**：二（结算通知，位于父代理的工具结果历史中，无法在 pre-step 修改）、八（工具描述，走 tool schema）。这两类可通过后续升级（如插件在系统提示词注入对照翻译）进一步缓解。
+- **插件已覆盖（v0.1.12 起全面中文化）**：
+  - 一（subagent 注入指令）、三（harness 身份）、四（workspace 提醒）、五（runtime context 头部）、六（时间上下文）、七（plan-mode 核心句）——通过 `agent/pre-step` 修改用户消息文本与 `system-prompt/assemble` 修改系统提示词段实现。
+  - 子代理专属英文 context（委派身份、委派深度）——在装配中移除并注入中文。
+  - **九、十（沙箱/审批政策）**——策略 context 翻译并改名，`refreshContext` 不会用英文覆盖。
+  - **十一（工具指导）**、**十二（结构化输出）**——系统提示词段直接翻译。
+- **保留英文**：工作目录、时间戳等环境信息（非指令）；工具 schema 描述（走 tool schema，插件通过注入中文工具说明抵消影响）。
+- **暂未覆盖**：二（结算通知，位于父代理的工具结果历史中，无法在 pre-step 修改）。
