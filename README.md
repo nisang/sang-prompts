@@ -3,7 +3,7 @@
 DSH（DeepSeek Harness）插件。安装后做三件事：
 
 1. **替换系统提示词**：运行时把人格前缀段替换为 `prompts/system.md`。
-2. **英文指令中文化**：把 DSH 框架注入到模型上下文中的英文指令（harness 身份、工作区提醒、运行时上下文、时间上下文、子代理注入指引、plan-mode 等）在运行时替换为中文，不改 dsh 框架源码。
+2. **英文指令中文化**：把 DSH 框架注入到模型上下文中的英文指令（harness 身份、工作区提醒、运行时上下文、时间上下文、子代理注入指引、plan-mode 等）在运行时替换为中文；并把子代理专属的英文身份说明（`You are a delegated subagent...`、委派深度）替换为中文。不改 dsh 框架源码。
 3. **写入用户提示词**：进入项目目录时，为软件项目确保 `AGENTS.md` 含项目规程段。
 
 英文指令中文化的对照清单见 [docs/dsh-english-instructions.md](docs/dsh-english-instructions.md)。
