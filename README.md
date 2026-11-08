@@ -56,6 +56,58 @@ DSH 框架在模型可见的上下文中注入了大量**英文指令**：
 
 ---
 
+## 涉及修改的指令（DSH 升级检查清单）
+
+本插件在运行时替换 DSH 框架注入的英文指令。**DSH 升级后，框架的英文文案可能改词、换位置或新增指令**，届时翻译规则可能失效。请按本清单复查，并更新 `lib/index.js` 中的 `INSTRUCTION_TRANSLATIONS`（段/消息翻译）、`CONTEXT_REPLACEMENTS`（子代理 context 移除注入）、`POLICY_CONTEXT_NAMES`（动态 context 翻译改名）。
+
+### 检查方法
+
+```bash
+# 在 dsh 安装目录的 @deepseek-ai 包中搜索各指令的英文特征
+cd /home/sangji/.npm-global/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai
+grep -rn "英文特征" <包名>/lib/index.js
+```
+
+- **特征仍存在且文案未变** → 翻译规则有效。
+- **特征存在但文案变了** → 更新对应规则的 `re`（正则）与 `replacement`（中文）。
+- **出现新的英文指令** → 新增一条翻译规则。
+
+### 指令清单
+
+| # | 指令 | DSH 来源包 | 英文原文特征（grep 用） | 处理方式 |
+|---|---|---|---|---|
+| 1 | harness 身份 | `dsh-system-prompt` | `You are an AI agent powered by DeepSeek Harness.` | 段翻译 |
+| 2 | 工作区指令提醒 | `dsh-agent-instructions` | `The following workspace instructions may be relevant to your work.` | 段翻译 |
+| 3 | 运行时上下文 | `dsh-system-prompt` | `Current runtime context. This snapshot supersedes earlier runtime-context snapshots.` | 段翻译 |
+| 4 | 时间上下文 | `dsh-time-context` | `Time sampled while preparing turn` | context 翻译改名 |
+| 5 | plan-mode 核心指令 | `dsh-plan-mode` | `You are in plan mode. Stay in plan mode until` | 段翻译 |
+| 6 | 子代理注入指引 | `dsh-subagent` | `Your parent agent id is` | pre-step 消息翻译 |
+| 7 | 子代理身份说明 | `dsh-subagent` | `You are a delegated subagent` | context 移除+中文注入 |
+| 8 | 子代理委派深度 | `dsh-tool-subagent` | `Delegation depth for` | context 移除+中文注入 |
+| 9 | 沙箱文件策略 | `dsh-sandbox-policy` | `Current DSH file policy:` | context 翻译改名 |
+| 10 | 审批政策 | `dsh-user-approval` | `Approval prompts are disabled in this session` | context 翻译改名 |
+| 11 | bash 工具指导 | `dsh-tool-bash` | `Check the [exit code: N] marker` | 段翻译 |
+| 12 | read 工具指导 | `dsh-tool-fs` | `Use the read tool — not shell commands like cat` | 段翻译 |
+| 13 | write/edit 工具指导 | `dsh-tool-fs` | `Read an existing file before overwriting it with write` | 段翻译 |
+| 14 | edit 工具指导 | `dsh-tool-fs` | `Read a file before editing it unless you just created or edited it` | 段翻译 |
+| 15 | apply_patch 工具指导 | `dsh-tool-fs` | `Prefer apply_patch over separate edit calls` | 段翻译 |
+| 16 | 结构化输出指令 | `dsh-subagent` | `When you have your final answer, you MUST report it` | 段翻译 |
+| 17 | 实现检出说明 | `dsh-harness-dev-context` | `The runtime context names the DeepSeek Harness implementation checkout.` | 段翻译 |
+| 18 | Web GUI 说明 | `dsh-harness-dev-context` | `You are interacting with the user through the DeepSeek Harness Web GUI` | 段翻译 |
+| 19 | 实现检出 context | `dsh-harness-dev-context` | `Current DeepSeek Harness implementation checkout:` | context 翻译改名 |
+| 20 | Web GUI 地址 context | `dsh-harness-dev-context` | `Current DeepSeek Harness Web GUI URL:` | context 翻译改名 |
+
+中英对照的完整原文见 [docs/dsh-english-instructions.md](docs/dsh-english-instructions.md)。
+
+### 保留英文（环境信息）
+
+以下为环境信息而非指令，保留英文不影响模型行为：
+
+- `Current working directory:`（工作目录，required context，不可改名，否则会被框架恢复）
+- 时间戳、路径、URL 等具体值
+
+---
+
 ## 环境要求
 
 - **DSH 版本**：适配 `0.2.2-rc.1`（兼容声明 `>=0.2.1-rc.2`）
