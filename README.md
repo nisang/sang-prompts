@@ -106,7 +106,7 @@ grep -rn "英文特征" <包名>/lib/index.js
 | 9 | 沙箱文件策略 | `dsh-sandbox-policy` | `Current DSH file policy:` | context 翻译改名 |
 | 10 | 审批政策 | `dsh-user-approval` | `Approval prompts are disabled in this session` | context 翻译改名 |
 | 11 | bash 工具指导 | `dsh-tool-bash` | `Check the [exit code: N] marker` | 段翻译 |
-| 12 | read 工具指导 | `dsh-tool-fs` | `Use the read tool — not shell commands like cat` | 段翻译 |
+| 12 | read 工具指导 | `dsh-tool-fs` | `Use the read tool — not shell commands like cat, sed, head, or tail` | 段翻译 |
 | 13 | write/edit 工具指导 | `dsh-tool-fs` | `Read an existing file before overwriting it with write` | 段翻译 |
 | 14 | edit 工具指导 | `dsh-tool-fs` | `Read a file before editing it unless you just created or edited it` | 段翻译 |
 | 15 | apply_patch 工具指导 | `dsh-tool-fs` | `Prefer apply_patch over separate edit calls` | 段翻译 |
@@ -115,6 +115,16 @@ grep -rn "英文特征" <包名>/lib/index.js
 | 18 | Web GUI 说明 | `dsh-harness-dev-context` | `You are interacting with the user through the DeepSeek Harness Web GUI` | 段翻译 |
 | 19 | 实现检出 context | `dsh-harness-dev-context` | `Current DeepSeek Harness implementation checkout:` | context 翻译改名 |
 | 20 | Web GUI 地址 context | `dsh-harness-dev-context` | `Current DeepSeek Harness Web GUI URL:` | context 翻译改名 |
+| 21 | glob 工具指导 | `dsh-tool-fs-search` | `Use the glob tool — not shell find` | 段翻译 |
+| 22 | grep 工具指导 | `dsh-tool-fs-search` | `Use the grep tool — not shell grep or rg` | 段翻译 |
+| 23 | 后台任务指导 | `dsh-tool-jobs` | `Track every background job id you start` | 段翻译 |
+| 24 | pwsh 退出码指导 | `dsh-tool-pwsh` | `Non-zero exits are reported as [exit code: N] markers` | 段翻译 |
+| 25 | 目标管理指导 | `dsh-tool-goal` | `create_goal may infer goal intent from a direct human request` | 段翻译 |
+| 26 | 定时任务授权 | `dsh-tool-schedule` | `Only create or modify scheduled tasks at the user's explicit request` | 段翻译 |
+| 27 | 会话检索指导 | `dsh-tool-session-query` | `Use session_search to find relevant work from prior sessions` | 段翻译 |
+| 28 | 终端面板指导 | `dsh-terminal-panel` | `Terminals you open with terminal_open appear in the user's side panel` | 段翻译 |
+| 29 | 文件引用与展示指导 | `dsh-deliverable-file-references` | `Prefer showing the primary results within your final response` | 段翻译 |
+| 30 | Agent Teams 政策 | `dsh-tool-agent-team` | `Agent Teams is available in this session` | 段翻译 |
 
 中英对照的完整原文见 [docs/dsh-english-instructions.md](docs/dsh-english-instructions.md)。
 
