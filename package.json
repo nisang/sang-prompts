@@ -1,6 +1,6 @@
 {
   "name": "dsh-sang-prompts",
-  "version": "0.1.35",
+  "version": "0.1.36",
   "type": "module",
   "description": "桑的提示词：安装后替换系统提示词，并在进入项目目录时写入项目规程",
   "keywords": [
@@ -18,7 +18,8 @@
     "prompts",
     "docs",
     "cordis.patch.yml",
-    "README.md"
+    "README.md",
+    "dict"
   ],
   "dsh": {
     "bundle": {
